@@ -100,7 +100,7 @@ To set up SpeechBrain-MOABB, follow these steps:
 The benchmark results presented here were generated using MOABB version 0.4.6.
 The code, however, remains compatible with newer MOABB versions.
 It is important to be aware that starting from MOABB version 1.0, there have been changes to the naming conventions for sessions.
-As an example, in BNCI2014001, the session labeled as `session_T` in previous versions is now referred to as `0train`, and `session_E` is now named `1test` in MOABB versions 1.0 and above. Please, take a look [here](https://github.com/NeuroTechX/moabb/issues/528) for more details.
+As an example, in BNCI2014001, the session labeled as `session_T` in previous versions is now referred to as `0train`, and `session_E` is now named `1test` in MOABB versions 1.0 and above.
 
 
 The code relies on [MNE](https://mne.tools/stable/index.html), which, by default, stores a config file at `$HOME/.mne/mne-python.json` and downloads data to `$HOME/mne-data`.
@@ -215,17 +215,14 @@ epoch: 3, lr: 6.11e-05 - train loss: 1.25 - valid loss: 1.39, valid f1: 3.13e-01
 
 ...
 
-epoch loaded: 862 - test loss: 5.71e-01, test f1: 7.80e-01, test acc: 7.81e-01, test cm: [[53 10  2  7]
- [ 4 66  1  1]
- [ 2  5 50 15]
- [ 1  4 11 56]]
-epoch loaded: 862 - valid loss: 8.68e-02, valid f1: 8.75e-01, valid acc: 8.75e-01, valid cm: [[11  3  0  0]
- [ 1 13  0  0]
- [ 0  0 13  1]
- [ 1  0  1 12]]
+epoch loaded: 862 - test loss: 5.94e-02, test f1: 8.57e-01, test acc: 8.57e-01, test cm: [[13  1  0  0]
+ [ 3 11  0  0]
+ [ 0  0 12  2]
+ [ 0  0  2 12]]
+
 ```
 
-This log file reports various training metrics for each epoch, including train/validation losses, accuracies, and a confusion matrix that provides insights into misclassified classes. At the end of training, we evaluate the final test and validation performance.
+This log file reports various training metrics for each epoch, including train/validation losses, accuracies, and a confusion matrix that provides insights into misclassified classes.
 
 Additionally, you can find detailed performance metrics for both validation and testing in files named `valid_metrics.pkl` and `test_metrics.pkl`."
 
@@ -264,8 +261,6 @@ acc [0.728009 0.729552 0.728588 0.735918 0.732253 0.732446 0.740934 0.729360 0.7
 [{'name': 'objective', 'type': 'objective', 'value': 0.26738040123456785}]
 
 ```
-**Note**: Be aware that starting from MOABB version 1.0, there have been changes to the naming conventions for sessions.
-As an example, in BNCI2014001, the session labeled as `session_T` in previous versions is now referred to as `0train`, and `session_E` is now named `1test` in MOABB versions 1.0 and above. Please, take a look [here](https://github.com/NeuroTechX/moabb/issues/528) for more details.
 
 The system's performance should closely match the values reported in the first row of the table in [Results](#-results) section. Specifically, please refer to the line corresponding to `/MotorImagery/BNCI2014001/EEGNet.yaml`.
 

@@ -1,0 +1,4 @@
+epoch: 1, lr: 1.95e-05 - train loss: 1.38 - valid loss: 1.39, valid f1: 1.63e-01, valid acc: 2.86e-01, valid cm: [[ 0 14  0  0]
+ [ 0 14  0  0]
+ [ 0 13  0  1]
+ [ 0 12  0  2]]
