@@ -113,8 +113,16 @@ class LSTMEEG(torch.nn.Module):
         )
 
         self.lstm = sb.nnet.RNN.LSTM(
-            input_shape= ones_tensor.shape,
-            hidden_size=8,
+            input_shape= out.shape,
+            hidden_size=64,
+            num_layers=1,
+        )
+
+        self.lstm_dropout = torch.nn.Dropout(p=dropout)
+
+        self.lstm2 = sb.nnet.RNN.LSTM(
+            input_shape= out.shape,
+            hidden_size=32,
             num_layers=1,
         )
 
@@ -128,7 +136,7 @@ class LSTMEEG(torch.nn.Module):
         self.dense_module.add_module(
             "fc_out",
             sb.nnet.linear.Linear(
-                input_size=out.shape[1]*8,
+                input_size=out.shape[1]*32,
                 n_neurons=dense_n_neurons,
                 max_norm=dense_max_norm,
             ),
@@ -166,5 +174,7 @@ class LSTMEEG(torch.nn.Module):
         x = self.conv_module(x)
         out, _=  self.lstm(x)
         x = self.lstm_dropout(out)
+        out2, _ = self.lstm2(x)
+        x = self.lstm_dropout(out2)
         x = self.dense_module(x)
         return x
