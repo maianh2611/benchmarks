@@ -140,8 +140,8 @@ classification_module_cnn_kernelsizes: 23
 avg_pool_kernels: 4
 cnn_pool_type: "avg"
 dropout: 0.25
-activation_type: 'elu'
+activation_type: 'relu'
 
-model: !new:models.test.RNNEEG
+model: !new:models.LSTMEEG.LSTMEEG
     input_shape: !ref <input_shape>
    

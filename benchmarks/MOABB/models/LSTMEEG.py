@@ -9,8 +9,8 @@ import torch
 import speechbrain as sb
 
 
-class RNNEEG(torch.nn.Module):
-    """EEGNet.
+class LSTMEEG(torch.nn.Module):
+    """LSTMEEG.
 
     Arguments
     ---------
@@ -105,17 +105,21 @@ class RNNEEG(torch.nn.Module):
         )
         self.conv_module.add_module("dropout_1", torch.nn.Dropout(p=dropout))
         ones_tensor = torch.ones((1,) + tuple(input_shape[1:-1]) + (1,))
-        
-        self.rnn = sb.nnet.RNN.LSTM(
-            input_shape= ones_tensor.shape,
-            hidden_size=8,
-            num_layers=1,
-        )
+
 
         # Shape of intermediate feature maps
         out = self.conv_module(
             torch.ones((1,) + tuple(input_shape[1:-1]) + (1,))
         )
+
+        self.lstm = sb.nnet.RNN.LSTM(
+            input_shape= ones_tensor.shape,
+            hidden_size=8,
+            num_layers=1,
+        )
+
+        self.lstm_dropout = torch.nn.Dropout(p=dropout)
+
         self.dense_module = torch.nn.Sequential()
         self.dense_module.add_module(
             "flatten", torch.nn.Flatten(),
@@ -129,7 +133,7 @@ class RNNEEG(torch.nn.Module):
                 max_norm=dense_max_norm,
             ),
         )
-        self.dense_module.add_module("act_out", torch.nn.Softmax(dim=1))
+        self.dense_module.add_module("act_out", torch.nn.LogSoftmax(dim=1))
         '''
         dense_input_size = self._num_flat_features(out)
         # DENSE MODULE
@@ -160,6 +164,7 @@ class RNNEEG(torch.nn.Module):
             Input to convolve. 4d tensors are expected.
         """
         x = self.conv_module(x)
-        out, _=  self.rnn(x)
-        x = self.dense_module(out)
+        out, _=  self.lstm(x)
+        x = self.lstm_dropout(out)
+        x = self.dense_module(x)
         return x
