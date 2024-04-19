@@ -52,8 +52,8 @@ metrics:
 n_train_examples: 100  # it will be replaced in the train script
 # checkpoints to average
 avg_models: 10 # @orion_step1: --avg_models~"uniform(1, 15,discrete=True)"
-number_of_epochs: 1000 # @orion_step1: --number_of_epochs~"uniform(250, 1000, discrete=True)"
-lr: 0.001 # @orion_step1: --lr~"choices([0.01, 0.005, 0.001, 0.0005, 0.0001])"
+number_of_epochs: 750
+lr: 0.0001 # @orion_step1: --lr~"choices([0.01, 0.005, 0.001, 0.0005, 0.0001])"
 # Learning rate scheduling (cyclic learning rate is used here)
 max_lr: !ref <lr> # Upper bound of the cycle (max value of the lr)
 momentum: 0.9
@@ -68,9 +68,12 @@ lr_annealing: !new:speechbrain.nnet.schedulers.CyclicLRScheduler
 label_smoothing: 0.0
 loss: !name:speechbrain.nnet.losses.nll_loss
     label_smoothing: !ref <label_smoothing>
-optimizer: !name:torch.optim.SGD
+# optimizer: !name:torch.optim.SGD
+#     lr: !ref <lr>
+#     momentum: !ref <momentum>
+
+optimizer: !name:torch.optim.Adam
     lr: !ref <lr>
-    momentum: !ref <momentum>
 
 epoch_counter: !new:speechbrain.utils.epoch_loop.EpochCounter  # epoch counter
     limit: !ref <number_of_epochs>
@@ -129,19 +132,25 @@ normalize: !name:speechbrain.processing.signal_processing.mean_std_norm
     dims: !ref <dims_to_normalize>
 # MODEL
 input_shape: [null, !ref <T>, !ref <C>, null]
-F1: 8
-D: 2
-conv_module0_cnn0_kernelsizes: 64
-conv_module1_cnn0_kernelsizes: 64
-conv_module2_cnn0_kernelsizes: 64
-conv_depthwise_kernelsizes: 16
-conv_pointwise_kernelsizes: 1
-classification_module_cnn_kernelsizes: 23
-avg_pool_kernels: 4
-cnn_pool_type: "avg"
+conv0_kernels: 8
+conv0_size: 3
+conv1_kernels: 32
+conv1_size: 5
+conv2_kernels: 64
+conv2_size: 7
 dropout: 0.25
-activation_type: 'relu'
+num_neurons: 250
+
 
 model: !new:models.LSTMEEG.LSTMEEG
     input_shape: !ref <input_shape>
+    conv0_kernels: !ref <conv0_kernels>
+    conv0_size: !ref <conv0_size>
+    conv1_kernels: !ref <conv1_kernels>
+    conv1_size: !ref <conv1_size>
+    conv2_kernels: !ref <conv2_kernels>
+    conv2_size: !ref <conv2_size>
+    dropout: !ref <dropout>
+    num_neurons: !ref <num_neurons>
+
    
