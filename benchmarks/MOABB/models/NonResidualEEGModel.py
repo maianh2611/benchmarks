@@ -7,17 +7,17 @@ class NonResidualEEGModel(torch.nn.Module):
         input_shape=None,  # (1, T, C, 1)
         F1 = 8,
         D = 2,
-        conv_module0_cnn0_kernelsizes = (1,63),
-        conv_module1_cnn0_kernelsizes = (1,63),
+        conv_module0_cnn0_kernelsizes = (63,1),
+        conv_module1_cnn0_kernelsizes = (63,1),
         conv_module2_cnn0_kernelsizes = (63,1),
         conv_depthwise_kernelsizes = (1,15),
         conv_pointwise_kernelsizes = (1,1),
+        cnn_deptwise_max_norm=1.0,
         classification_module_cnn_kernelsizes = (1,23),
         avg_pool_kernels = (4,1),
         conv_module4_avg_pool_kernels = (8,1),
         cnn_pool_type="avg",
         dropout=0.25,
-        batch_max_norm = 1,
         dense_max_norm=0.25,
         dense_n_neurons=4,
         activation_type="elu",
@@ -82,13 +82,14 @@ class NonResidualEEGModel(torch.nn.Module):
             pool_axis=[1, 2],
         )
         self.Conv2DType2_dropout = torch.nn.Dropout(p=dropout)
+        C = input_shape[2]
         self.Conv2DType3_depthwise = sb.nnet.CNN.Conv2d(
             in_channels=F1*D,
             out_channels=F1*D,
-            kernel_size=conv_depthwise_kernelsizes,
-            padding="same",
-            padding_mode="constant",
+            kernel_size=(1, C),
+            padding="valid",
             bias=False,
+            max_norm=cnn_deptwise_max_norm,
             swap=True,
         )
         self.Conv2DType3_pointwise = sb.nnet.CNN.Conv2d(
@@ -112,12 +113,12 @@ class NonResidualEEGModel(torch.nn.Module):
             bias=False,
             swap=True,
         )
+
         self.Conv2DType4_pointwise = sb.nnet.CNN.Conv2d(
             in_channels=F1*D,
             out_channels=F1*D,
-            kernel_size=conv_pointwise_kernelsizes,
-            padding="same",
-            padding_mode="constant",
+            kernel_size=(1, 1),
+            padding="valid",
             bias=False,
             swap=True,
         )
@@ -129,6 +130,7 @@ class NonResidualEEGModel(torch.nn.Module):
         self.Conv2DType4_pool = sb.nnet.pooling.Pooling2d(
             pool_type=cnn_pool_type,
             kernel_size=conv_module4_avg_pool_kernels,
+            stride=conv_module4_avg_pool_kernels,
             pool_axis=[1, 2],
         )
         self.Conv2DType4_dropout = torch.nn.Dropout(p=dropout)
@@ -167,14 +169,13 @@ class NonResidualEEGModel(torch.nn.Module):
         self.classification_module.add_module("act_out", torch.nn.LogSoftmax(dim=1))
     
     def getDenseShape(self,input):
-        x = input
-        x = self.Conv2DType0_cnn(x)
+        x =  self.Conv2DType0_cnn(input)
         x = self.Conv2DType0_Batchnorm(x)
         x = self.Conv2DType1_cnn(x)
         x = self.Conv2DType1_Batchnorm(x)
         x = self.Conv2DType2_cnn(x)
         x = self.Conv2DType2_Batchnorm(x)
-        x = self.Conv2DType2_activate(x)   
+        x = self.Conv2DType2_activate(x)
         x = self.Conv2DType2_pool(x)
         x = self.Conv2DType2_dropout(x)
         x = self.Conv2DType3_depthwise(x)
