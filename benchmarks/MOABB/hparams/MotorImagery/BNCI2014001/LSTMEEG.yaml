@@ -135,7 +135,7 @@ cnn_poolstride_: 6
 cnn_poolsize: !ref <cnn_poolsize_> * 4 # same resolution as for EEGNet research space
 cnn_poolstride: !ref <cnn_poolstride_> * 4 # same resolution as for EEGNet research space
 dropout: 0.07959
-cnn_spatial_kernels: 64 # @orion_step1: --cnn_temporal_kernelsize~"choices([8, 32, 61, 64])"
+cnn_spatial_kernels: 64 # @orion_step1: --cnn_spatial_kernels~"choices([8, 32, 61, 64])"
 cnn_pool_type: 'avg'
 cnn_activation_type: 'relu'
 cnn_temporal_kernels: 61 # @orion_step1: --cnn_temporal_kernels~"choices([8, 32, 64, 61])"
