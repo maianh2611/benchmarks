@@ -1,0 +1,5 @@
+cnn_spatial_kernels: 8
+cnn_temporal_kernels: 32
+cnn_temporal_kernelsize: 41
+label_smoothing: 0.1
+number_of_epochs: 850

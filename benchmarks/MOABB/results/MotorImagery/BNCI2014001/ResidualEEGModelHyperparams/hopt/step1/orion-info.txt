@@ -1,0 +1,97 @@
+ /home/luc/.local/lib/python3.10/site-packages/orion/benchmark/task/profet/model_utils.py:32: RuntimeWarning:The `profet` extras needs to be installed in order to use the Profet tasks.
+Error: cannot import name 'Tester' from 'numpy.testing' (/home/luc/.local/lib/python3.10/site-packages/numpy/testing/__init__.py)
+Use `pip install orion[profet]` to install the profet extras.
+Identification
+==============
+name: ResidualEEGModelHyperparams_BNCI2014001_hopt_step1
+version: 1
+user: luc
+
+
+Commandline
+===========
+./run_experiments.sh --hparams hparams/MotorImagery/BNCI2014001/ResidualEEGModel.yaml --data_folder eeg_data/ --seed 1986 --output_folder results/MotorImagery/BNCI2014001/ResidualEEGModelHyperparams/hopt/step1/exp --nsbj 3 --nsess 2 --nruns 1 --eval_metric acc --eval_set dev --train_mode leave-one-session-out --rnd_dir True --number_of_epochs~choices([750, 850]) --label_smoothing~choices([0.0,0.1]) --repeat_augment 0 --conv_module0_cnn0_kernelsizes~choices([41, 55, 61, 63]) --conv_module1_cnn0_kernelsizes~choices([1, 55, 61, 63]) --conv_module2_cnn0_kernelsizes~choices([41, 55, 61, 63]) --conv_depthwise_kernelsizes~choices([41, 55, 61, 63]) --classification_module_cnn_kernelsizes~choices([5, 30, 41]) --avg_pool_kernels~uniform(1, 8,discrete=True) --conv_module4_avg_pool_kernels~choices([4, 8]) --dropout~choices([0.25, 0.5])
+
+
+Config
+======
+max trials: 10
+max broken: 3
+working dir: 
+
+
+Algorithm
+=========
+tpe:
+    equal_weight: False
+    full_weight_num: 25
+    gamma: 0.25
+    max_retry: 100
+    n_ei_candidates: 24
+    n_initial_points: 20
+    parallel_strategy:
+        of_type: StatusBasedParallelStrategy
+        strategy_configs:
+            broken:
+                of_type: MaxParallelStrategy
+    prior_weight: 1.0
+    seed: 1986
+
+
+Space
+=====
+/avg_pool_kernels: uniform(1, 8, discrete=True)
+/classification_module_cnn_kernelsizes: choices([5, 30, 41])
+/conv_depthwise_kernelsizes: choices([41, 55, 61, 63])
+/conv_module0_cnn0_kernelsizes: choices([41, 55, 61, 63])
+/conv_module1_cnn0_kernelsizes: choices([1, 55, 61, 63])
+/conv_module2_cnn0_kernelsizes: choices([41, 55, 61, 63])
+/conv_module4_avg_pool_kernels: choices([4, 8])
+/dropout: choices([0.25, 0.5])
+/label_smoothing: choices([0.0, 0.1])
+/number_of_epochs: choices([750, 850])
+
+
+Meta-data
+=========
+user: luc
+datetime: 2024-04-24 04:46:46.168171
+orion version: 0.2.7
+VCS:
+  HEAD_sha: 9daad7d974e6841247e4bbb2969fae71e753fad1
+  active_branch: main
+  diff_sha: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  is_dirty: False
+  type: git
+
+
+Parent experiment
+=================
+root:
+parent:
+adapter:
+
+
+Stats
+=====
+completed: True
+trials completed: 10
+best trial:
+  id: 24d430f4e37c8fdf19b9d5c91c4c0198
+  evaluation: 0.3839285714285714
+  params:
+    /avg_pool_kernels: 5
+    /classification_module_cnn_kernelsizes: 30
+    /conv_depthwise_kernelsizes: 55
+    /conv_module0_cnn0_kernelsizes: 55
+    /conv_module1_cnn0_kernelsizes: 55
+    /conv_module2_cnn0_kernelsizes: 55
+    /conv_module4_avg_pool_kernels: 8
+    /dropout: 0.5
+    /label_smoothing: 0.1
+    /number_of_epochs: 750
+start time: 2024-04-24 04:46:46.168171
+finish time: 2024-04-24 07:48:55.162514
+elapsed_time: 3:02:08.349714
+
+

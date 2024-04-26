@@ -1,0 +1,10 @@
+avg_pool_kernels: 5
+classification_module_cnn_kernelsizes: 30
+conv_depthwise_kernelsizes: 55
+conv_module0_cnn0_kernelsizes: 55
+conv_module1_cnn0_kernelsizes: 55
+conv_module2_cnn0_kernelsizes: 55
+conv_module4_avg_pool_kernels: 8
+dropout: 0.5
+label_smoothing: 0.1
+number_of_epochs: 750

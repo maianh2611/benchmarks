@@ -25,19 +25,13 @@ class LSTMEEG(torch.nn.Module):
         Dropout probability in the convolutional module.
     cnn_activation_type: str
         Activation function of hidden layers in the convolutional module.
-    attn_depth: int
-        Depth of the transformer module.
-    attn_heads: int
-        Number of heads in the transformer module.
-    attn_dropout: float
-        Dropout probability for the transformer module.
     dense_n_neurons: int
         Number of output neurons.
 
     Example
     -------
     #>>> inp_tensor = torch.rand([1, 200, 32, 1])
-    #>>> model = EEGConformer(input_shape=inp_tensor.shape)
+    #>>> model = LSTMEEG(input_shape=inp_tensor.shape)
     #>>> output = model(inp_tensor)
     #>>> output.shape
     #torch.Size([1,4])
@@ -77,18 +71,8 @@ class LSTMEEG(torch.nn.Module):
         )
 
         out = self.emb_module(torch.ones((1, T, C, 1)))
-        # LSTM module
-        # self.EncoderDecoderLSTM = torch.nn.Sequential()
-        # self.EncoderDecoderLSTM.add_module('lstm_0', EncoderDecoderLSTM(
-        #     input_shape= out.shape,
-        #     hidden_size=128,
-        #     num_layers=1,
-        # ))
 
         self.emb_module.add_module("act_1", torch.nn.ReLU())
-        #self.EncoderDecoderLSTM.add_module('dropout', torch.nn.Dropout(0.2))
-
-        
 
         self.VanillaLSTM = sb.nnet.RNN.LSTM(
             input_shape= out.shape,
@@ -123,8 +107,7 @@ class LSTMEEG(torch.nn.Module):
             Input to convolve. 4d tensors are expected.
         """
         x = self.emb_module(x)  # (batch, time_, EEG channel, channel)
-        #print('real',x.shape)
-        #out = self.EncoderDecoderLSTM(x)
+
         _, (h_final, _) = self.VanillaLSTM(x)
         h_final = torch.squeeze(h_final, 0)
         x = self.dense_module(h_final)
@@ -253,39 +236,3 @@ class PatchEmbedding(torch.nn.Module):
         )  # (batch, time_, emb_size=channel*1) #ok
         return x
 
-
-# class EncoderDecoderLSTM(torch.nn.Module):
-#   def __init__(self, rnn_type=sb.nnet.RNN.LSTM, input_shape=None, hidden_size=8, num_layers=1):
-#     super(EncoderDecoderLSTM, self).__init__()
-#     # We here use rnn_type becuase we will also try an LSTM model.
-#     # Encoder initialization
-#     self.encoder = sb.nnet.RNN.LSTM(input_shape=input_shape, hidden_size=hidden_size, num_layers=num_layers)
-    
-#     reshaped_shape = input_shape[:-2] + (hidden_size,)
-#     # Decoder initialization
-#     self.decoder = sb.nnet.RNN.LSTM(input_shape=reshaped_shape, hidden_size=hidden_size, num_layers=num_layers)
-
-#   def forward(self, X):
-#     """Returns the output of the seq-to-seq LSTM.
-
-#     Arguments
-#     ---------
-#     X : torch.Tensor
-
-#     Returns
-#     ---------
-#     out: torch.Tensor
-#     """
-#     #print('before encode',X.shape)
-#     _, (h_final, _) = self.encoder(X)
-#     #print('before squeeze',h_final.shape)
-#     h_concat = torch.squeeze(h_final, 0)
-#     #print('after squeeze',h_concat.shape)
-#     h_concat = h_concat.reshape(h_concat.shape[0], 1, h_concat.shape[1])
-#     #print('before concat',h_concat.shape)
-#     h_concat = h_concat.repeat(1, X.shape[1], 1)
-#     #print('real_reshaped_shape',h_concat.shape)
-#     out, _ = self.decoder(h_concat)
-
-#     return out
-  

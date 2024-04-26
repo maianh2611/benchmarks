@@ -1,0 +1,87 @@
+ /home/luc/.local/lib/python3.10/site-packages/orion/benchmark/task/profet/model_utils.py:32: RuntimeWarning:The `profet` extras needs to be installed in order to use the Profet tasks.
+Error: cannot import name 'Tester' from 'numpy.testing' (/home/luc/.local/lib/python3.10/site-packages/numpy/testing/__init__.py)
+Use `pip install orion[profet]` to install the profet extras.
+Identification
+==============
+name: LSTMEEGHyperparams_BNCI2014001_hopt_step1
+version: 1
+user: luc
+
+
+Commandline
+===========
+./run_experiments.sh --hparams hparams/MotorImagery/BNCI2014001/LSTMEEG.yaml --data_folder eeg_data/ --seed 1986 --output_folder results/MotorImagery/BNCI2014001/LSTMEEGHyperparams/hopt/step1/exp --nsbj 3 --nsess 2 --nruns 1 --eval_metric acc --eval_set dev --train_mode leave-one-session-out --rnd_dir True --number_of_epochs~choices([750, 850]) --label_smoothing~choices([0.0,0.1]) --repeat_augment 0 --cnn_spatial_kernels~choices([8, 32, 61, 64]) --cnn_temporal_kernels~choices([8, 32, 64, 61]) --cnn_temporal_kernelsize~choices([41, 55, 61, 63])
+
+
+Config
+======
+max trials: 10
+max broken: 3
+working dir: 
+
+
+Algorithm
+=========
+tpe:
+    equal_weight: False
+    full_weight_num: 25
+    gamma: 0.25
+    max_retry: 100
+    n_ei_candidates: 24
+    n_initial_points: 20
+    parallel_strategy:
+        of_type: StatusBasedParallelStrategy
+        strategy_configs:
+            broken:
+                of_type: MaxParallelStrategy
+    prior_weight: 1.0
+    seed: 1986
+
+
+Space
+=====
+/cnn_spatial_kernels: choices([8, 32, 61, 64])
+/cnn_temporal_kernels: choices([8, 32, 64, 61])
+/cnn_temporal_kernelsize: choices([41, 55, 61, 63])
+/label_smoothing: choices([0.0, 0.1])
+/number_of_epochs: choices([750, 850])
+
+
+Meta-data
+=========
+user: luc
+datetime: 2024-04-25 03:20:46.796139
+orion version: 0.2.7
+VCS:
+  HEAD_sha: 7678c7f77b87df9057fce4f3e6e1858fa929e3a0
+  active_branch: main
+  diff_sha: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  is_dirty: False
+  type: git
+
+
+Parent experiment
+=================
+root:
+parent:
+adapter:
+
+
+Stats
+=====
+completed: True
+trials completed: 10
+best trial:
+  id: 3ef6e22b0d5f0cb45773f02143e2ee7c
+  evaluation: 0.36904761904761907
+  params:
+    /cnn_spatial_kernels: 8
+    /cnn_temporal_kernels: 32
+    /cnn_temporal_kernelsize: 41
+    /label_smoothing: 0.1
+    /number_of_epochs: 850
+start time: 2024-04-25 03:20:46.796139
+finish time: 2024-04-25 07:28:06.160295
+elapsed_time: 4:07:19.267865
+
+

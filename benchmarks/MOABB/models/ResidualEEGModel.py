@@ -11,14 +11,12 @@ class ResidualEEGModel(torch.nn.Module):
         conv_module1_cnn0_kernelsizes = (63,1),
         conv_module2_cnn0_kernelsizes = (63,1),
         conv_depthwise_kernelsizes = (1,15),
-        conv_pointwise_kernelsizes = (1,1),
         cnn_deptwise_max_norm=1.0,
         classification_module_cnn_kernelsizes = (1,23),
         avg_pool_kernels = (4,1),
         conv_module4_avg_pool_kernels = (8,1),
         cnn_pool_type="avg",
         dropout=0.25,
-        batch_max_norm = 1,
         dense_max_norm=0.25,
         dense_n_neurons=4,
         activation_type="elu",
@@ -83,7 +81,10 @@ class ResidualEEGModel(torch.nn.Module):
             pool_axis=[1, 2],
         )
         self.Conv2DType2_dropout = torch.nn.Dropout(p=dropout)
+
+        # Separable Convolution Block 
         C = input_shape[2]
+        # Depthwise Convolution
         self.Conv2DType3_depthwise = sb.nnet.CNN.Conv2d(
             in_channels=F1*D,
             out_channels=F1*D,
@@ -93,10 +94,11 @@ class ResidualEEGModel(torch.nn.Module):
             max_norm=cnn_deptwise_max_norm,
             swap=True,
         )
+        # Pointwise Convolution
         self.Conv2DType3_pointwise = sb.nnet.CNN.Conv2d(
             in_channels=F1*D,
             out_channels=F1*D,
-            kernel_size=conv_pointwise_kernelsizes,
+            kernel_size=(1, 1),
             padding="same",
             padding_mode="constant",
             bias=False,
@@ -105,6 +107,8 @@ class ResidualEEGModel(torch.nn.Module):
         self.Conv2DType3_Batchnorm = sb.nnet.normalization.BatchNorm2d(
             input_size=F1*D, momentum=0.01, affine=True,
         )
+
+        # Separable Convolution Block 
         self.Conv2DType4_depthwise = sb.nnet.CNN.Conv2d(
             in_channels=F1*D,
             out_channels=F1*D,
@@ -126,6 +130,7 @@ class ResidualEEGModel(torch.nn.Module):
         self.Conv2DType4_Batchnorm = sb.nnet.normalization.BatchNorm2d(
             input_size=F1*D, momentum=0.01, affine=True,
         )
+
         self.Conv2DType4_activate = activation
 
         self.Conv2DType4_pool = sb.nnet.pooling.Pooling2d(
@@ -135,6 +140,8 @@ class ResidualEEGModel(torch.nn.Module):
             pool_axis=[1, 2],
         )
         self.Conv2DType4_dropout = torch.nn.Dropout(p=dropout)
+
+        # Classifier block
 
         self.classification_conv =sb.nnet.CNN.Conv2d(
             in_channels=F1*D,
@@ -224,24 +231,27 @@ class ResidualEEGModel(torch.nn.Module):
         x =  self.Conv2DType0_cnn(x)
         x = self.Conv2DType0_Batchnorm(x)
         res1 = x
+
         x = self.Conv2DType1_cnn(x)
         x = self.Conv2DType1_Batchnorm(x)
+        # Adding the output of Conv2DType0
         x = x + res1
         x = self.Conv2DType2_cnn(x)
         x = self.Conv2DType2_Batchnorm(x)
         x = self.Conv2DType2_activate(x)
-        
         x = self.Conv2DType2_pool(x)
         x = self.Conv2DType2_dropout(x)
         res2 = x
         x = self.Conv2DType3_depthwise(x)
         x = self.Conv2DType3_pointwise(x)
         x = self.Conv2DType3_Batchnorm(x)
+        # Adding the output of Conv2DType2
         x = x + res2
         res3 = x
         x = self.Conv2DType4_depthwise(x)
         x = self.Conv2DType4_pointwise(x)
         x = self.Conv2DType4_Batchnorm(x)
+        # Adding the output of Conv2DType3
         x = x + res3
         x = self.Conv2DType4_activate(x)
         x = self.Conv2DType4_pool(x)
